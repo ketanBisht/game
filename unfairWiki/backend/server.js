@@ -57,6 +57,10 @@ const getCleanRoom = (roomId) => {
 }
 
 // --- Wikipedia Proxy Route ---
+app.get("/", (req,res)=>{
+  res.send("Backend running");
+});
+
 app.get('/api/wiki/:title', async (req, res) => {
     try {
         const title = req.params.title;
