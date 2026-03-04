@@ -1,6 +1,82 @@
 import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { Swords, Settings, Info, Users } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Swords, Settings, Info, Users, ChevronDown, ChevronUp, Zap, Target, Trophy, AlertTriangle } from 'lucide-react';
+
+// ---------------------------------------------------------------------------
+// How to Play Panel
+// ---------------------------------------------------------------------------
+const HOW_TO_PLAY_STEPS = [
+    {
+        icon: <Users size={16} className="text-purple-400" />,
+        title: "Create or Join a Room",
+        desc: "Enter your name and a room code. Share the code with friends and wait in the lobby."
+    },
+    {
+        icon: <Target size={16} className="text-green-400" />,
+        title: "Race to the Target",
+        desc: "Everyone starts on a random Wikipedia page. Click internal links to navigate to the target page."
+    },
+    {
+        icon: <Zap size={16} className="text-yellow-400" />,
+        title: "Survive the Chaos",
+        desc: "With Chaos Mode on, the server randomly teleports everyone to a new page — no warning!"
+    },
+    {
+        icon: <Trophy size={16} className="text-amber-400" />,
+        title: "Win the Race",
+        desc: "First player to land on the target page wins. Fewer clicks = more bragging rights."
+    },
+    {
+        icon: <AlertTriangle size={16} className="text-red-400" />,
+        title: "The Rules",
+        desc: "Only click Wikipedia links inside the article — no search, no browser back. You can surrender anytime."
+    }
+];
+
+const HowToPlay = () => {
+    const [open, setOpen] = useState(false);
+    return (
+        <div className="mt-4 bg-slate-800/60 border border-slate-700 rounded-2xl overflow-hidden">
+            <button
+                onClick={() => setOpen(v => !v)}
+                className="w-full flex items-center justify-between px-6 py-4 text-left hover:bg-slate-700/40 transition-colors"
+            >
+                <span className="flex items-center gap-2 font-bold text-slate-200 text-sm">
+                    <Info size={15} className="text-purple-400" /> How to Play
+                </span>
+                {open ? <ChevronUp size={15} className="text-slate-400" /> : <ChevronDown size={15} className="text-slate-400" />}
+            </button>
+            <AnimatePresence>
+                {open && (
+                    <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: 'auto', opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.22 }}
+                        className="overflow-hidden"
+                    >
+                        <div className="px-6 pb-6 pt-4 space-y-4 border-t border-slate-700/60">
+                            {HOW_TO_PLAY_STEPS.map((step, i) => (
+                                <div key={i} className="flex gap-3">
+                                    <div className="mt-0.5 shrink-0 w-7 h-7 rounded-lg bg-slate-900 border border-slate-700 flex items-center justify-center">
+                                        {step.icon}
+                                    </div>
+                                    <div>
+                                        <p className="font-semibold text-white text-sm">{step.title}</p>
+                                        <p className="text-slate-400 text-xs mt-0.5 leading-relaxed">{step.desc}</p>
+                                    </div>
+                                </div>
+                            ))}
+                            <p className="text-center text-xs text-slate-600 italic pt-2 border-t border-slate-700/40">
+                                Wikipedia knowledge + chaos = Unfair Wiki 🎲
+                            </p>
+                        </div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+        </div>
+    );
+};
 
 const Lobby = ({ socket, onGameStart }) => {
     const [playerName, setPlayerName] = useState('');
@@ -148,8 +224,12 @@ const Lobby = ({ socket, onGameStart }) => {
                             </div>
                         </div>
                     </div>
+
+                    {/* How to Play */}
+                    <HowToPlay />
                 </motion.div>
             </div>
+
         );
     }
 

@@ -22,7 +22,8 @@ const Game = ({ socket, roomState: initialRoomState }) => {
         const fetchWikiPage = async () => {
             setLoading(true);
             try {
-                const response = await fetch(`http://localhost:3001/api/wiki/${encodeURIComponent(currentPage)}`);
+                const backendUrl = import.meta.env.VITE_BACKEND_URL || 'https://unfairwiki.onrender.com';
+                const response = await fetch(`${backendUrl}/api/wiki/${encodeURIComponent(currentPage)}`);
                 const data = await response.json();
                 setWikiHtml(data.html || '');
                 setPageTitle(data.title || currentPage);
@@ -160,8 +161,8 @@ const Game = ({ socket, roomState: initialRoomState }) => {
                                     <div
                                         key={p.id}
                                         className={`flex items-center gap-2 px-3 py-2 rounded-xl border text-sm ${p.id === socket.id
-                                                ? 'bg-purple-900/50 border-purple-500/60 text-purple-200'
-                                                : 'bg-slate-800 border-slate-700 text-slate-300'
+                                            ? 'bg-purple-900/50 border-purple-500/60 text-purple-200'
+                                            : 'bg-slate-800 border-slate-700 text-slate-300'
                                             }`}
                                     >
                                         <div className="flex flex-col">

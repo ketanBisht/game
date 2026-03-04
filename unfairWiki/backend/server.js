@@ -12,7 +12,11 @@ app.use(cors());
 const server = http.createServer(app);
 const io = new Server(server, {
     cors: {
-        origin: "https://game-a4ir.vercel.app/", // Allow our Vite frontend
+        origin: [
+            "https://unfairwiki.vercel.app",
+            "https://game-a4ir.vercel.app",
+            "http://localhost:5173"
+        ],
         methods: ["GET", "POST"]
     }
 });
@@ -57,8 +61,8 @@ const getCleanRoom = (roomId) => {
 }
 
 // --- Wikipedia Proxy Route ---
-app.get("/", (req,res)=>{
-  res.send("Backend running");
+app.get("/", (req, res) => {
+    res.send("Backend running");
 });
 
 app.get('/api/wiki/:title', async (req, res) => {

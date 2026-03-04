@@ -6,7 +6,8 @@ import { Trophy, LogOut, Flag } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import './App.css';
 
-const socket = io('http://localhost:3001');
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'https://unfairwiki.onrender.com';
+const socket = io(BACKEND_URL);
 
 function App() {
   const [gameState, setGameState] = useState('lobby'); // lobby | playing | game_over
