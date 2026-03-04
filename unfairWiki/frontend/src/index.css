@@ -1,0 +1,304 @@
+@import "tailwindcss";
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  min-height: 100%;
+  background-color: #0f172a;
+  /* slate-900 — matches the app background */
+}
+
+#root {
+  width: 100%;
+  min-height: 100vh;
+}
+
+/* === Clickable Wikipedia links === */
+.wiki-internal-link {
+  color: #0645ad !important;
+  text-decoration: underline !important;
+  cursor: pointer !important;
+  transition: color 0.15s;
+}
+
+.wiki-internal-link:hover {
+  color: #0b0080 !important;
+}
+
+/* === Wikipedia Content container === */
+.wiki-content {
+  font-family: -apple-system, BlinkMacSystemFont, 'Linux Libertine', Georgia, Times, serif;
+  font-size: 0.9375rem;
+  line-height: 1.6;
+  color: #202122;
+  max-width: 960px;
+}
+
+/* Headings */
+.wiki-content h1,
+.wiki-content h2 {
+  font-family: 'Linux Libertine', Georgia, Times, serif;
+  font-weight: normal;
+  border-bottom: 1px solid #a2a9b1;
+  margin-top: 1.5em;
+  margin-bottom: 0.5em;
+  padding-bottom: 0.2em;
+  font-size: 1.5em;
+  color: #000;
+  overflow: hidden;
+}
+
+.wiki-content h3 {
+  font-size: 1.2em;
+  font-weight: bold;
+  margin-top: 1.2em;
+  margin-bottom: 0.3em;
+  color: #000;
+}
+
+.wiki-content h4,
+.wiki-content h5 {
+  font-size: 1em;
+  font-weight: bold;
+  margin-top: 1em;
+  margin-bottom: 0.2em;
+}
+
+/* Paragraphs & text */
+.wiki-content p {
+  margin: 0.5em 0 1em;
+}
+
+/* Lists */
+.wiki-content ul,
+.wiki-content ol {
+  padding-left: 1.8em;
+  margin: 0.4em 0 0.8em;
+}
+
+.wiki-content li {
+  margin-bottom: 0.2em;
+}
+
+/* === Infobox (key facts table, floats right) === */
+.wiki-content .infobox {
+  float: right;
+  clear: right;
+  margin: 0 0 1em 1.5em;
+  padding: 0.3em;
+  border: 1px solid #a2a9b1;
+  background: #f8f9fa;
+  font-size: 0.85em;
+  line-height: 1.5;
+  max-width: 280px;
+  width: auto;
+  display: table;
+  /* shrink-wrap to content */
+  border-collapse: collapse;
+}
+
+.wiki-content .infobox caption,
+.wiki-content .infobox .infobox-title,
+.wiki-content .infobox-above {
+  font-size: 1.05em;
+  font-weight: bold;
+  text-align: center;
+  padding: 0.4em;
+  background: #cee0f2;
+}
+
+.wiki-content .infobox td,
+.wiki-content .infobox th {
+  padding: 0.2em 0.5em;
+  vertical-align: top;
+  border: none;
+}
+
+.wiki-content .infobox th {
+  font-weight: bold;
+  text-align: right;
+  background: transparent;
+  white-space: nowrap;
+}
+
+.wiki-content .infobox img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+}
+
+/* === Generic wikitables === */
+.wiki-content table.wikitable,
+.wiki-content .wikitable {
+  border-collapse: collapse;
+  margin: 1em 0;
+  font-size: 0.875em;
+  background: #f8f9fa;
+  border: 1px solid #a2a9b1;
+  width: auto;
+  max-width: 100%;
+  display: table;
+  overflow-x: visible;
+}
+
+.wiki-content table.wikitable th,
+.wiki-content .wikitable th {
+  background: #eaecf0;
+  border: 1px solid #a2a9b1;
+  padding: 0.3em 0.5em;
+  font-weight: bold;
+  text-align: center;
+}
+
+.wiki-content table.wikitable td,
+.wiki-content .wikitable td {
+  border: 1px solid #a2a9b1;
+  padding: 0.3em 0.5em;
+  vertical-align: top;
+}
+
+/* All other tables */
+.wiki-content table {
+  border-collapse: collapse;
+  margin: 1em 0;
+  font-size: 0.875em;
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+.wiki-content table td,
+.wiki-content table th {
+  border: 1px solid #a2a9b1;
+  padding: 0.3em 0.5em;
+  vertical-align: top;
+}
+
+/* === Thumbnail images === */
+.wiki-content .thumb {
+  margin: 0.5em 1.4em 1.3em 0;
+  padding: 0;
+  display: table;
+  clear: right;
+}
+
+.wiki-content .tright,
+.wiki-content .float-right {
+  float: right;
+  clear: right;
+  margin: 0 0 1em 1.4em;
+}
+
+.wiki-content .tleft,
+.wiki-content .float-left {
+  float: left;
+  clear: left;
+  margin: 0 1.4em 1em 0;
+}
+
+.wiki-content .thumbinner {
+  background: #f8f9fa;
+  border: 1px solid #a2a9b1;
+  padding: 3px;
+  display: table-cell;
+  font-size: 0.8em;
+  line-height: 1.4;
+}
+
+.wiki-content .thumbimage {
+  border: 1px solid #a2a9b1;
+}
+
+.wiki-content .thumbcaption {
+  color: #555;
+  font-size: 0.85em;
+  line-height: 1.4;
+  padding: 3px 3px 0;
+  text-align: left;
+}
+
+.wiki-content .thumbinner img,
+.wiki-content .thumb img {
+  max-width: 220px;
+  height: auto;
+  display: block;
+}
+
+/* === Gallery === */
+.wiki-content .gallery {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 1em 0;
+  padding: 0;
+  list-style: none;
+}
+
+.wiki-content .gallerybox {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0;
+}
+
+.wiki-content .gallerybox img {
+  max-width: 120px;
+  height: auto;
+  border: 1px solid #a2a9b1;
+}
+
+.wiki-content .gallerytext {
+  font-size: 0.75em;
+  text-align: center;
+}
+
+/* Images in general */
+.wiki-content img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Clearfix for floated infoboxes */
+.wiki-content::after {
+  content: '';
+  display: table;
+  clear: both;
+}
+
+/* Horizontal rules */
+.wiki-content hr {
+  border: none;
+  border-top: 1px solid #a2a9b1;
+  margin: 1em 0;
+}
+
+/* Small text / captions */
+.wiki-content small,
+.wiki-content .small {
+  font-size: 0.85em;
+}
+
+/* Responsive: collapse infobox on small screens */
+@media (max-width: 600px) {
+  .wiki-content .infobox {
+    float: none;
+    margin: 0 auto 1em;
+    max-width: 100%;
+    width: 100%;
+    display: block;
+  }
+
+  .wiki-content .tright,
+  .wiki-content .float-right {
+    float: none;
+    margin: 0 auto 1em;
+  }
+}
