@@ -12,7 +12,7 @@ app.use(cors());
 const server = http.createServer(app);
 const io = new Server(server, {
     cors: {
-        origin: "*", // Allow our Vite frontend
+        origin: "https://game-a4ir.vercel.app/", // Allow our Vite frontend
         methods: ["GET", "POST"]
     }
 });
