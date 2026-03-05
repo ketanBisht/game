@@ -358,6 +358,34 @@ io.on('connection', (socket) => {
         }
     });
 
+    // Host requests a rematch — resets room to lobby state, same players
+    socket.on('play_again', (roomId) => {
+        const room = activeRooms[roomId];
+        if (!room) return;
+        if (room.hostId !== socket.id) return; // only host can trigger
+
+        // Stop any running jump timer
+        if (room.jumpInterval) {
+            clearTimeout(room.jumpInterval);
+            room.jumpInterval = null;
+        }
+
+        // Reset room back to waiting state
+        room.status = 'waiting';
+        room.targetPage = null;
+
+        // Reset every player's path and position
+        Object.values(room.players).forEach(p => {
+            p.currentPage = null;
+            p.path = [];
+            p.surrendered = false;
+        });
+
+        console.log(`Room ${roomId} reset for rematch`);
+        // Notify all players to return to lobby
+        io.to(roomId).emit('returned_to_lobby', getCleanRoom(roomId));
+    });
+
 
     socket.on('disconnect', () => {
         console.log('Player disconnected:', socket.id);
