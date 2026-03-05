@@ -284,16 +284,16 @@ const Game = ({ socket, roomState: initialRoomState }) => {
                 {showJumpOverlay && (
                     <motion.div initial={{ opacity: 0, scale: 0.85 }} animate={{ opacity: 1, scale: 1 }}
                         exit={{ opacity: 0, scale: 1.1 }} transition={{ duration: 0.35, type: 'spring' }}
-                        className="fixed inset-0 z-50 flex items-center justify-center"
-                        style={{ backgroundColor: '#f0e6c8' }}>
-                        <div className="text-center p-8">
+                        className="fixed inset-0 z-50 flex items-center justify-center p-4"
+                        style={{ backgroundColor: 'rgba(10,5,5,0.95)', backdropFilter: 'blur(8px)' }}>
+                        <div className="text-center p-8 border-4 border-[#ff3b30] shadow-[0_0_50px_rgba(255,59,48,0.3)] bg-[#1a0f0f]">
                             <motion.div animate={{ rotate: [0, -10, 10, -10, 10, 0] }} transition={{ duration: 0.5, repeat: 3 }}>
-                                <AlertTriangle size={90} className="mx-auto mb-6 text-[#0f0d0a]" />
+                                <AlertTriangle size={90} className="mx-auto mb-6 text-[#ff3b30]" style={{ filter: 'drop-shadow(0 0 20px rgba(255,59,48,0.5))' }} />
                             </motion.div>
-                            <h1 className="text-2xl md:text-3xl mb-5 text-[#0f0d0a] uppercase" style={{ textShadow: '4px 4px 0 rgba(15,13,10,0.15)' }}>
+                            <h1 className="text-2xl md:text-3xl mb-5 text-[#ff3b30] uppercase" style={{ textShadow: '4px 4px 0 rgba(150,20,20,0.6)' }}>
                                 CHAOS JUMP!
                             </h1>
-                            <p className="text-[10px] leading-loose" style={{ color: 'rgba(15,13,10,0.55)' }}>
+                            <p className="text-[10px] leading-loose" style={{ color: '#f0e6c8' }}>
                                 TELEPORTING EVERYONE TO A RANDOM PAGE...
                             </p>
                         </div>
