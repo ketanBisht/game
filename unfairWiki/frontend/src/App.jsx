@@ -64,7 +64,12 @@ function App() {
 
       {gameState === 'lobby' && (
         <motion.div key="lobby" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-          <Lobby socket={socket} onGameStart={(s) => { setRoomState(s); setGameState('playing'); }} />
+          <Lobby
+            socket={socket}
+            initialRoomState={roomState}
+            onGameStart={(s) => { setRoomState(s); setGameState('playing'); }}
+            onLeave={() => { setRoomState(null); }}
+          />
         </motion.div>
       )}
 

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Swords, Settings, Info, Users, ChevronDown, ChevronUp, Zap, Target, Trophy, AlertTriangle } from 'lucide-react';
 
@@ -57,14 +57,27 @@ const HowToPlay = () => {
     );
 };
 
-const Lobby = ({ socket, onGameStart }) => {
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'https://unfairwiki.onrender.com';
+
+const Lobby = ({ socket, initialRoomState = null, onGameStart, onLeave }) => {
     const [playerName, setPlayerName] = useState('');
     const [roomId, setRoomId] = useState('');
-    const [roomState, setRoomState] = useState(null);
+    // Initialize from prop so Play Again correctly restores room view
+    const [roomState, setRoomState] = useState(initialRoomState);
     const [error, setError] = useState('');
-    const [jumpTimerSeconds, setJumpTimerSeconds] = useState(60);
-    const [randomJumpEnabled, setRandomJumpEnabled] = useState(true);
+    const [jumpTimerSeconds, setJumpTimerSeconds] = useState(
+        initialRoomState?.settings?.jumpTimerSeconds ?? 60
+    );
+    const [randomJumpEnabled, setRandomJumpEnabled] = useState(
+        initialRoomState?.settings?.randomJumpEnabled ?? true
+    );
     const [customTarget, setCustomTarget] = useState('');
+
+    // Target page validation state
+    const [targetValidating, setTargetValidating] = useState(false);
+    const [targetValid, setTargetValid] = useState(null); // null | true | false
+    const [targetError, setTargetError] = useState('');
+    const validateTimerRef = React.useRef(null);
 
     useEffect(() => {
         if (!socket) return;
@@ -87,20 +100,69 @@ const Lobby = ({ socket, onGameStart }) => {
     };
     const handleUpdateSettings = () => {
         if (roomState && roomState.hostId === socket.id) {
+            // Don't save target if it's still being validated or was found invalid
+            const safeTarget = customTarget.trim() !== '' && targetValid !== false
+                ? customTarget.trim()
+                : null;
             socket.emit('update_settings', {
                 roomId: roomState.id,
                 settings: { randomJumpEnabled, jumpTimerSeconds: parseInt(jumpTimerSeconds, 10) },
-                targetPage: customTarget.trim() !== '' ? customTarget : null
+                targetPage: safeTarget
             });
         }
     };
     const handleStartGame = () => {
+        if (targetValid === false) { setError('Target page not found on Wikipedia!'); return; }
         if (roomState && roomState.hostId === socket.id) socket.emit('start_game', roomState.id);
     };
     const handleLeaveRoom = () => {
         if (roomState?.id) socket.emit('leave_room', roomState.id);
         setRoomState(null);
         setError('');
+        if (onLeave) onLeave();
+    };
+
+    // --- Target page validation (debounced, checks via our backend proxy) ---
+    const handleTargetChange = (val) => {
+        setCustomTarget(val);
+        setTargetValid(null);
+        setTargetError('');
+        if (validateTimerRef.current) clearTimeout(validateTimerRef.current);
+        if (!val.trim()) return;
+        setTargetValidating(true);
+        validateTimerRef.current = setTimeout(async () => {
+            try {
+                const res = await fetch(
+                    `${BACKEND_URL}/api/wiki/${encodeURIComponent(val.trim().replace(/ /g, '_'))}`
+                );
+                const data = await res.json();
+                if (data.error || !data.title) {
+                    setTargetValid(false);
+                    setTargetError(`"${val.trim()}" not found on Wikipedia.`);
+                } else {
+                    setTargetValid(true);
+                    setTargetError('');
+                    // Auto-update canonical title from Wikipedia
+                    setCustomTarget(data.title);
+                    setTimeout(() => handleUpdateSettingsWithTarget(data.title), 50);
+                }
+            } catch {
+                setTargetValid(false);
+                setTargetError('Could not verify page. Check your connection.');
+            } finally {
+                setTargetValidating(false);
+            }
+        }, 800); // 800ms debounce
+    };
+
+    const handleUpdateSettingsWithTarget = (target) => {
+        if (roomState && roomState.hostId === socket.id) {
+            socket.emit('update_settings', {
+                roomId: roomState.id,
+                settings: { randomJumpEnabled, jumpTimerSeconds: parseInt(jumpTimerSeconds, 10) },
+                targetPage: target || null
+            });
+        }
     };
 
     // Shared styles
@@ -309,16 +371,29 @@ const Lobby = ({ socket, onGameStart }) => {
                                 <label className="block text-[8px] mb-3" style={{ color: 'rgba(15,13,10,0.6)' }}>TARGET PAGE</label>
                                 {isHost ? (
                                     <>
-                                        <input type="text" value={customTarget}
-                                            onChange={(e) => setCustomTarget(e.target.value)}
-                                            onBlur={handleUpdateSettings}
-                                            onKeyDown={(e) => e.key === 'Enter' && handleUpdateSettings()}
-                                            placeholder="e.g. Banana"
-                                            style={{ ...inputStyle, marginBottom: '0.5rem' }}
-                                            onFocus={e => e.target.style.borderColor = '#0f0d0a'}
-                                            onBlur2={e => e.target.style.borderColor = 'rgba(15,13,10,0.25)'}
-                                        />
-                                        <p className="text-[10px] flex items-start gap-1.5 leading-relaxed" style={{ color: 'rgba(15,13,10,0.4)', fontFamily: 'system-ui, sans-serif' }}>
+                                        <div className="relative">
+                                            <input type="text" value={customTarget}
+                                                onChange={(e) => handleTargetChange(e.target.value)}
+                                                placeholder="e.g. Banana"
+                                                style={{ ...inputStyle, marginBottom: '0.5rem', paddingRight: '36px' }}
+                                                onFocus={e => e.target.style.borderColor = '#0f0d0a'}
+                                                onBlur={e => e.target.style.borderColor = targetValid === false ? 'rgba(180,60,60,0.6)' : targetValid === true ? 'rgba(30,120,30,0.6)' : 'rgba(15,13,10,0.25)'}
+                                            />
+                                            {/* Validation indicator */}
+                                            <span className="absolute right-3 top-3 text-[14px]">
+                                                {targetValidating && <span style={{ fontFamily: 'system-ui', fontSize: '11px', color: 'rgba(15,13,10,0.4)' }}>...</span>}
+                                                {!targetValidating && targetValid === true && <span>✓</span>}
+                                                {!targetValidating && targetValid === false && <span style={{ color: '#b03030' }}>✗</span>}
+                                            </span>
+                                        </div>
+                                        {/* Validation feedback */}
+                                        {targetError && (
+                                            <p className="text-[10px] mb-1" style={{ color: '#b03030', fontFamily: 'system-ui, sans-serif' }}>⚠ {targetError}</p>
+                                        )}
+                                        {targetValid === true && (
+                                            <p className="text-[10px] mb-1" style={{ color: '#2a6a2a', fontFamily: 'system-ui, sans-serif' }}>✓ Page found on Wikipedia</p>
+                                        )}
+                                        <p className="text-[10px] flex items-start gap-1.5 leading-relaxed mt-1" style={{ color: 'rgba(15,13,10,0.4)', fontFamily: 'system-ui, sans-serif' }}>
                                             <Info size={10} className="mt-0.5 flex-shrink-0" /> Leave blank for a random target.
                                         </p>
                                     </>
