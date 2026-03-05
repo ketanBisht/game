@@ -12,8 +12,26 @@ body {
   padding: 0;
   width: 100%;
   min-height: 100%;
-  background-color: #0f172a;
-  /* slate-900 — matches the app background */
+  background-color: #f0e6c8;
+  font-family: 'Press Start 2P', monospace;
+  /* 8-bit retro theme */
+  image-rendering: pixelated;
+}
+
+/* Apply 8-bit font to all UI elements EXCEPT wiki content */
+*:not(.wiki-content):not(.wiki-content *) {
+  font-family: 'Press Start 2P', monospace;
+}
+
+/* Force wiki content to use readable serif — must override the * rule above */
+.wiki-content,
+.wiki-content * {
+  font-family: -apple-system, BlinkMacSystemFont, 'Linux Libertine', Georgia, Times, serif !important;
+}
+
+/* Retro pixel border utility */
+.pixel-border {
+  box-shadow: 3px 3px 0px 0px rgba(15, 13, 10, 0.25);
 }
 
 #root {

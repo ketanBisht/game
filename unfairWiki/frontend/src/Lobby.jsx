@@ -2,72 +2,51 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Swords, Settings, Info, Users, ChevronDown, ChevronUp, Zap, Target, Trophy, AlertTriangle } from 'lucide-react';
 
-// ---------------------------------------------------------------------------
-// How to Play Panel
-// ---------------------------------------------------------------------------
+// === CREAM + BLACK RETRO PALETTE ===
+// bg: #f0e6c8  surface: #e4d8b0  deep-surface: #d4c898  text: #0f0d0a  dim: rgba(15,13,10,0.5)
+
 const HOW_TO_PLAY_STEPS = [
-    {
-        icon: <Users size={16} className="text-purple-400" />,
-        title: "Create or Join a Room",
-        desc: "Enter your name and a room code. Share the code with friends and wait in the lobby."
-    },
-    {
-        icon: <Target size={16} className="text-green-400" />,
-        title: "Race to the Target",
-        desc: "Everyone starts on a random Wikipedia page. Click internal links to navigate to the target page."
-    },
-    {
-        icon: <Zap size={16} className="text-yellow-400" />,
-        title: "Survive the Chaos",
-        desc: "With Chaos Mode on, the server randomly teleports everyone to a new page — no warning!"
-    },
-    {
-        icon: <Trophy size={16} className="text-amber-400" />,
-        title: "Win the Race",
-        desc: "First player to land on the target page wins. Fewer clicks = more bragging rights."
-    },
-    {
-        icon: <AlertTriangle size={16} className="text-red-400" />,
-        title: "The Rules",
-        desc: "Only click Wikipedia links inside the article — no search, no browser back. You can surrender anytime."
-    }
+    { icon: <Users size={13} />, title: "Create / Join Room", desc: "Enter your name and a room code. Share the code with friends and wait in the lobby." },
+    { icon: <Target size={13} />, title: "Race to the Target", desc: "Everyone starts on a random Wikipedia page. Click links to navigate toward the target." },
+    { icon: <Zap size={13} />, title: "Survive the Chaos", desc: "Chaos Mode teleports everyone to a random page at any time — no warning!" },
+    { icon: <Trophy size={13} />, title: "Win the Race", desc: "First player to land on the target page wins. Fewer clicks = more bragging rights." },
+    { icon: <AlertTriangle size={13} />, title: "The Rules", desc: "Only click Wikipedia links inside the article. No search, no back button. Surrender anytime." },
 ];
 
 const HowToPlay = () => {
     const [open, setOpen] = useState(false);
     return (
-        <div className="mt-4 bg-slate-800/60 border border-slate-700 rounded-2xl overflow-hidden">
+        <div className="mt-4 border-2 border-[#0f0d0a]/20 pixel-border" style={{ backgroundColor: '#e4d8b0' }}>
             <button
                 onClick={() => setOpen(v => !v)}
-                className="w-full flex items-center justify-between px-6 py-4 text-left hover:bg-slate-700/40 transition-colors"
+                className="w-full flex items-center justify-between px-5 py-4 text-left transition-all text-[#0f0d0a]"
+                style={{ fontSize: '9px' }}
+                onMouseEnter={e => e.currentTarget.style.backgroundColor = 'rgba(15,13,10,0.05)'}
+                onMouseLeave={e => e.currentTarget.style.backgroundColor = 'transparent'}
             >
-                <span className="flex items-center gap-2 font-bold text-slate-200 text-sm">
-                    <Info size={15} className="text-purple-400" /> How to Play
-                </span>
-                {open ? <ChevronUp size={15} className="text-slate-400" /> : <ChevronDown size={15} className="text-slate-400" />}
+                <span className="flex items-center gap-3"><Info size={12} /> HOW TO PLAY</span>
+                {open ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
             </button>
             <AnimatePresence>
                 {open && (
                     <motion.div
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: 'auto', opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
-                        transition={{ duration: 0.22 }}
+                        initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.22 }}
                         className="overflow-hidden"
                     >
-                        <div className="px-6 pb-6 pt-4 space-y-4 border-t border-slate-700/60">
+                        <div className="px-5 pb-6 pt-4 space-y-5" style={{ borderTop: '1px solid rgba(15,13,10,0.12)' }}>
                             {HOW_TO_PLAY_STEPS.map((step, i) => (
-                                <div key={i} className="flex gap-3">
-                                    <div className="mt-0.5 shrink-0 w-7 h-7 rounded-lg bg-slate-900 border border-slate-700 flex items-center justify-center">
+                                <div key={i} className="flex gap-4">
+                                    <div className="mt-0.5 shrink-0 w-7 h-7 border-2 border-[#0f0d0a]/20 flex items-center justify-center" style={{ backgroundColor: '#f0e6c8' }}>
                                         {step.icon}
                                     </div>
                                     <div>
-                                        <p className="font-semibold text-white text-sm">{step.title}</p>
-                                        <p className="text-slate-400 text-xs mt-0.5 leading-relaxed">{step.desc}</p>
+                                        <p className="text-[9px] text-[#0f0d0a] mb-1">{step.title}</p>
+                                        <p className="text-[11px] leading-relaxed" style={{ color: 'rgba(15,13,10,0.55)', fontFamily: 'system-ui, sans-serif' }}>{step.desc}</p>
                                     </div>
                                 </div>
                             ))}
-                            <p className="text-center text-xs text-slate-600 italic pt-2 border-t border-slate-700/40">
+                            <p className="text-center text-[8px] pt-3" style={{ color: 'rgba(15,13,10,0.3)', borderTop: '1px solid rgba(15,13,10,0.1)' }}>
                                 Wikipedia knowledge + chaos = Unfair Wiki 🎲
                             </p>
                         </div>
@@ -83,293 +62,269 @@ const Lobby = ({ socket, onGameStart }) => {
     const [roomId, setRoomId] = useState('');
     const [roomState, setRoomState] = useState(null);
     const [error, setError] = useState('');
-
-    // Settings State
     const [jumpTimerSeconds, setJumpTimerSeconds] = useState(60);
     const [randomJumpEnabled, setRandomJumpEnabled] = useState(true);
     const [customTarget, setCustomTarget] = useState('');
 
     useEffect(() => {
         if (!socket) return;
-
-        // Listen for room updates
-        const handleRoomStateUpdate = (newState) => {
-            setRoomState(newState);
-            setError('');
-        };
-
-        const handleGameStarted = (newState) => {
-            setRoomState(newState);
-            if (onGameStart) onGameStart(newState);
-        };
-
-        socket.on('room_state_update', handleRoomStateUpdate);
-        socket.on('game_started', handleGameStarted);
-
-        return () => {
-            socket.off('room_state_update', handleRoomStateUpdate);
-            socket.off('game_started', handleGameStarted);
-        };
+        const onRoomUpdate = (s) => { setRoomState(s); setError(''); };
+        const onGameStarted = (s) => { setRoomState(s); if (onGameStart) onGameStart(s); };
+        socket.on('room_state_update', onRoomUpdate);
+        socket.on('game_started', onGameStarted);
+        return () => { socket.off('room_state_update', onRoomUpdate); socket.off('game_started', onGameStarted); };
     }, [socket, onGameStart]);
 
     const handleCreateRoom = (e) => {
         e.preventDefault();
-        if (!playerName || !roomId) {
-            setError("Name and Room ID are required.");
-            return;
-        }
-
-        socket.emit('create_room', { playerName, roomId }, (response) => {
-            if (response.error) {
-                setError(response.error);
-            }
-        });
+        if (!playerName || !roomId) { setError("Name and Room ID are required."); return; }
+        socket.emit('create_room', { playerName, roomId }, (r) => { if (r.error) setError(r.error); });
     };
-
     const handleJoinRoom = (e) => {
         e.preventDefault();
-        if (!playerName || !roomId) {
-            setError("Name and Room ID are required.");
-            return;
-        }
-
-        socket.emit('join_room', { playerName, roomId }, (response) => {
-            if (response.error) {
-                setError(response.error);
-            }
-        });
+        if (!playerName || !roomId) { setError("Name and Room ID are required."); return; }
+        socket.emit('join_room', { playerName, roomId }, (r) => { if (r.error) setError(r.error); });
     };
-
     const handleUpdateSettings = () => {
         if (roomState && roomState.hostId === socket.id) {
             socket.emit('update_settings', {
                 roomId: roomState.id,
-                settings: {
-                    randomJumpEnabled,
-                    jumpTimerSeconds: parseInt(jumpTimerSeconds, 10)
-                },
+                settings: { randomJumpEnabled, jumpTimerSeconds: parseInt(jumpTimerSeconds, 10) },
                 targetPage: customTarget.trim() !== '' ? customTarget : null
             });
         }
     };
-
     const handleStartGame = () => {
-        if (roomState && roomState.hostId === socket.id) {
-            socket.emit('start_game', roomState.id);
-        }
+        if (roomState && roomState.hostId === socket.id) socket.emit('start_game', roomState.id);
+    };
+    const handleLeaveRoom = () => {
+        if (roomState?.id) socket.emit('leave_room', roomState.id);
+        setRoomState(null);
+        setError('');
     };
 
-    // ---------------------------------------------------------------------------
-    // View 1: Initial Entry (Create / Join form)
-    // ---------------------------------------------------------------------------
+    // Shared styles
+    const inputStyle = {
+        backgroundColor: '#f0e6c8', border: '2px solid rgba(15,13,10,0.25)',
+        color: '#0f0d0a', outline: 'none',
+        fontFamily: "'Press Start 2P', monospace", fontSize: '9px',
+        width: '100%', padding: '12px 16px',
+    };
+    const btnPrimary = { backgroundColor: '#0f0d0a', color: '#f0e6c8', border: '2px solid #0f0d0a' };
+    const btnSecondary = { backgroundColor: '#e4d8b0', color: '#0f0d0a', border: '2px solid rgba(15,13,10,0.3)' };
+
+    // ── View 1: Entry Screen ──────────────────────────────────────────────────
     if (!roomState) {
         return (
-            <div className="min-h-screen bg-slate-900 text-white flex items-center justify-center p-4 w-full">
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="max-w-md w-full"
-                >
-                    <div className="text-center mb-8">
-                        <h1 className="text-5xl font-black mb-2 text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-600">
-                            Unfair Wiki
+            <div className="min-h-screen flex items-center justify-center p-4 w-full" style={{ backgroundColor: '#f0e6c8', color: '#0f0d0a' }}>
+                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="max-w-md w-full">
+
+                    <div className="text-center mb-10">
+                        <h1 className="text-xl md:text-3xl mb-3 uppercase" style={{ textShadow: '3px 3px 0 rgba(15,13,10,0.15)' }}>
+                            UNFAIR WIKI
                         </h1>
-                        <p className="text-slate-400">The chaotic Wikipedia racing game.</p>
+                        <p className="text-[8px]" style={{ color: 'rgba(15,13,10,0.45)' }}>THE CHAOTIC WIKIPEDIA RACING GAME</p>
                     </div>
 
-                    <div className="bg-slate-800 p-8 rounded-2xl shadow-2xl border border-slate-700">
+                    <div className="border-2 border-[#0f0d0a]/20 p-8 pixel-border" style={{ backgroundColor: '#e4d8b0' }}>
                         {error && (
-                            <div className="bg-red-500/10 border border-red-500 text-red-500 rounded p-3 text-sm mb-4">
-                                {error}
+                            <div className="border-2 border-[#0f0d0a]/40 text-[9px] p-3 mb-5 leading-relaxed" style={{ backgroundColor: '#d4c898', color: '#0f0d0a' }}>
+                                ⚠ {error}
                             </div>
                         )}
-
-                        <div className="space-y-4">
+                        <div className="space-y-5">
                             <div>
-                                <label className="block text-sm font-medium text-slate-400 mb-1">Your Name</label>
+                                <label className="block text-[8px] mb-2" style={{ color: 'rgba(15,13,10,0.6)' }}>YOUR NAME</label>
                                 <input
-                                    type="text"
-                                    value={playerName}
+                                    type="text" value={playerName}
                                     onChange={(e) => setPlayerName(e.target.value)}
-                                    className="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all font-medium text-white"
+                                    style={inputStyle}
+                                    onFocus={e => e.target.style.borderColor = '#0f0d0a'}
+                                    onBlur={e => e.target.style.borderColor = 'rgba(15,13,10,0.25)'}
                                     placeholder="e.g. WikiWizard"
                                 />
                             </div>
-
                             <div>
-                                <label className="block text-sm font-medium text-slate-400 mb-1">Room Code</label>
+                                <label className="block text-[8px] mb-2" style={{ color: 'rgba(15,13,10,0.6)' }}>ROOM CODE</label>
                                 <input
-                                    type="text"
-                                    value={roomId}
+                                    type="text" value={roomId}
                                     onChange={(e) => setRoomId(e.target.value.toUpperCase())}
-                                    className="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all font-mono font-bold tracking-wider text-white"
-                                    placeholder="e.g. CODE123"
-                                    maxLength={10}
+                                    style={{ ...inputStyle, letterSpacing: '0.15em' }}
+                                    onFocus={e => e.target.style.borderColor = '#0f0d0a'}
+                                    onBlur={e => e.target.style.borderColor = 'rgba(15,13,10,0.25)'}
+                                    placeholder="e.g. CODE123" maxLength={10}
                                 />
                             </div>
-
-                            <div className="grid grid-cols-2 gap-4 pt-4">
-                                <button
-                                    onClick={handleCreateRoom}
-                                    className="bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-4 rounded-lg transition-colors flex items-center justify-center gap-2"
-                                >
-                                    Create Room
+                            <div className="grid grid-cols-2 gap-4 pt-2">
+                                <button onClick={handleCreateRoom} style={btnPrimary}
+                                    className="text-[8px] py-4 px-3 pixel-border transition-all"
+                                    onMouseEnter={e => { e.currentTarget.style.backgroundColor = '#f0e6c8'; e.currentTarget.style.color = '#0f0d0a'; }}
+                                    onMouseLeave={e => { e.currentTarget.style.backgroundColor = '#0f0d0a'; e.currentTarget.style.color = '#f0e6c8'; }}>
+                                    CREATE ROOM
                                 </button>
-                                <button
-                                    onClick={handleJoinRoom}
-                                    className="bg-slate-700 hover:bg-slate-600 text-white font-bold py-3 px-4 rounded-lg transition-colors flex items-center justify-center gap-2"
-                                >
-                                    Join Room
+                                <button onClick={handleJoinRoom} style={btnSecondary}
+                                    className="text-[8px] py-4 px-3 pixel-border transition-all"
+                                    onMouseEnter={e => { e.currentTarget.style.backgroundColor = '#0f0d0a'; e.currentTarget.style.color = '#f0e6c8'; e.currentTarget.style.borderColor = '#0f0d0a'; }}
+                                    onMouseLeave={e => { e.currentTarget.style.backgroundColor = '#e4d8b0'; e.currentTarget.style.color = '#0f0d0a'; e.currentTarget.style.borderColor = 'rgba(15,13,10,0.3)'; }}>
+                                    JOIN ROOM
                                 </button>
                             </div>
                         </div>
                     </div>
 
-                    {/* How to Play */}
                     <HowToPlay />
                 </motion.div>
             </div>
-
         );
     }
 
-    // ---------------------------------------------------------------------------
-    // View 2: Inside the Lobby
-    // ---------------------------------------------------------------------------
+    // ── View 2: Lobby ─────────────────────────────────────────────────────────
     const isHost = roomState.hostId === socket.id;
     const playersList = Object.values(roomState.players);
 
     return (
-        <div className="min-h-screen bg-slate-900 text-white p-4 md:p-8 w-full block">
+        <div className="min-h-screen p-4 md:p-8 w-full" style={{ backgroundColor: '#f0e6c8', color: '#0f0d0a' }}>
             <div className="max-w-4xl mx-auto">
 
                 {/* Header */}
-                <div className="flex flex-col md:flex-row justify-between items-center mb-8 bg-slate-800 p-6 rounded-2xl border border-slate-700">
+                <div className="flex flex-col md:flex-row justify-between items-center mb-8 border-2 border-[#0f0d0a]/20 p-6 pixel-border" style={{ backgroundColor: '#e4d8b0' }}>
                     <div>
-                        <h2 className="text-3xl font-black mb-1">Room: <span className="text-purple-400 font-mono">{roomState.id}</span></h2>
-                        <p className="text-slate-400 flex items-center gap-2">
-                            <Users size={16} /> {playersList.length} / 8 Players
+                        <h2 className="text-base mb-2">ROOM: <span className="text-[#0f0d0a]">{roomState.id}</span></h2>
+                        <p className="text-[8px] flex items-center gap-2" style={{ color: 'rgba(15,13,10,0.5)' }}>
+                            <Users size={12} /> {playersList.length} / 8 PLAYERS
                         </p>
                     </div>
                     {isHost ? (
-                        <button
-                            onClick={handleStartGame}
-                            className="mt-4 md:mt-0 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white font-bold py-3 px-8 rounded-full shadow-lg shadow-purple-500/30 transition-all transform hover:scale-105 flex items-center gap-2"
-                        >
-                            <Swords size={20} /> START GAME
-                        </button>
+                        <div className="mt-4 md:mt-0 flex items-center gap-3">
+                            <button onClick={handleStartGame}
+                                className="text-[8px] px-8 py-4 flex items-center gap-3 pixel-border transition-all"
+                                style={btnPrimary}
+                                onMouseEnter={e => { e.currentTarget.style.backgroundColor = '#f0e6c8'; e.currentTarget.style.color = '#0f0d0a'; }}
+                                onMouseLeave={e => { e.currentTarget.style.backgroundColor = '#0f0d0a'; e.currentTarget.style.color = '#f0e6c8'; }}>
+                                <Swords size={14} /> START GAME
+                            </button>
+                            <button onClick={handleLeaveRoom}
+                                className="text-[8px] px-5 py-4 flex items-center gap-2 pixel-border transition-all"
+                                style={{ backgroundColor: '#e4d8b0', color: '#0f0d0a', border: '2px solid rgba(15,13,10,0.25)' }}
+                                onMouseEnter={e => { e.currentTarget.style.backgroundColor = '#d4c898'; }}
+                                onMouseLeave={e => { e.currentTarget.style.backgroundColor = '#e4d8b0'; }}>
+                                LEAVE
+                            </button>
+                        </div>
                     ) : (
-                        <div className="mt-4 md:mt-0 px-6 py-3 bg-slate-700/50 rounded-full text-slate-300 font-medium border border-slate-600">
-                            Waiting for host to start...
+                        <div className="mt-4 md:mt-0 flex items-center gap-3">
+                            <div className="px-6 py-3 border border-[#0f0d0a]/20 text-[8px]" style={{ color: 'rgba(15,13,10,0.45)', backgroundColor: '#d4c898' }}>
+                                WAITING FOR HOST...
+                            </div>
+                            <button onClick={handleLeaveRoom}
+                                className="text-[8px] px-5 py-3 flex items-center gap-2 pixel-border transition-all"
+                                style={{ backgroundColor: '#e4d8b0', color: '#0f0d0a', border: '2px solid rgba(15,13,10,0.25)' }}
+                                onMouseEnter={e => { e.currentTarget.style.backgroundColor = '#d4c898'; }}
+                                onMouseLeave={e => { e.currentTarget.style.backgroundColor = '#e4d8b0'; }}>
+                                LEAVE
+                            </button>
                         </div>
                     )}
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
 
-                    {/* Players List */}
+                    {/* Players */}
                     <div className="md:col-span-2 space-y-4">
-                        <h3 className="text-xl font-bold flex items-center gap-2 text-slate-300">
-                            Players
-                        </h3>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <h3 className="text-[9px]" style={{ color: 'rgba(15,13,10,0.6)' }}>PLAYERS</h3>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                             {playersList.map(player => (
-                                <div key={player.id} className="bg-slate-800 border border-slate-700 rounded-xl p-4 flex items-center justify-between">
-                                    <span className="font-semibold text-white">{player.name}</span>
+                                <div key={player.id} className="border-2 border-[#0f0d0a]/15 flex items-center justify-between p-4" style={{ backgroundColor: '#e4d8b0' }}>
+                                    <span className="text-[8px] text-[#0f0d0a]">{player.name}</span>
                                     {player.id === roomState.hostId && (
-                                        <span className="text-xs bg-yellow-500/20 text-yellow-400 px-2 py-1 rounded font-bold border border-yellow-500/30">HOST</span>
+                                        <span className="text-[7px] border border-[#0f0d0a]/40 px-2 py-0.5 text-[#0f0d0a]">HOST</span>
                                     )}
                                 </div>
                             ))}
-                            {/* Empty Slots */}
                             {Array.from({ length: 8 - playersList.length }).map((_, i) => (
-                                <div key={`empty-${i}`} className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-4 flex items-center justify-center text-slate-600 border-dashed">
-                                    Empty Slot
+                                <div key={`empty-${i}`} className="flex items-center justify-center p-4 text-[8px]"
+                                    style={{ border: '2px dashed rgba(15,13,10,0.12)', color: 'rgba(15,13,10,0.25)', backgroundColor: '#ece2c4' }}>
+                                    EMPTY SLOT
                                 </div>
                             ))}
                         </div>
                     </div>
 
-                    {/* Game Settings */}
+                    {/* Settings */}
                     <div className="space-y-4">
-                        <h3 className="text-xl font-bold flex items-center gap-2 text-slate-300">
-                            <Settings size={20} /> Settings
+                        <h3 className="text-[9px] flex items-center gap-2" style={{ color: 'rgba(15,13,10,0.6)' }}>
+                            <Settings size={13} /> SETTINGS
                         </h3>
-                        <div className="bg-slate-800 border border-slate-700 rounded-xl p-6 space-y-6">
+                        <div className="border-2 border-[#0f0d0a]/15 p-5 space-y-6" style={{ backgroundColor: '#e4d8b0' }}>
 
-                            {/* The Chaos Toggle */}
+                            {/* Chaos Toggle */}
                             <div>
-                                <div className="flex items-center justify-between mb-2">
-                                    <label className="font-semibold text-white">Random Jump Chaos</label>
-                                    {isHost && (
+                                <div className="flex items-center justify-between mb-3">
+                                    <label className="text-[8px]">CHAOS JUMP</label>
+                                    {isHost ? (
                                         <button
-                                            onClick={() => {
-                                                setRandomJumpEnabled(!randomJumpEnabled);
-                                                setTimeout(handleUpdateSettings, 50);
-                                            }}
-                                            className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${randomJumpEnabled ? 'bg-purple-600' : 'bg-slate-600'}`}
+                                            onClick={() => { setRandomJumpEnabled(!randomJumpEnabled); setTimeout(handleUpdateSettings, 50); }}
+                                            className="relative inline-flex h-5 w-10 items-center border-2 transition-colors"
+                                            style={{ backgroundColor: randomJumpEnabled ? '#0f0d0a' : '#d4c898', borderColor: randomJumpEnabled ? '#0f0d0a' : 'rgba(15,13,10,0.3)' }}
                                         >
-                                            <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${randomJumpEnabled ? 'translate-x-6' : 'translate-x-1'}`} />
+                                            <span className={`inline-block h-3 w-3 transform transition-transform ${randomJumpEnabled ? 'translate-x-5' : 'translate-x-1'}`}
+                                                style={{ backgroundColor: randomJumpEnabled ? '#f0e6c8' : '#0f0d0a' }} />
                                         </button>
-                                    )}
-                                    {!isHost && (
-                                        <span className={roomState.settings.randomJumpEnabled ? 'text-green-400 font-bold' : 'text-slate-500 font-bold'}>
+                                    ) : (
+                                        <span className="text-[8px]" style={{ color: roomState.settings.randomJumpEnabled ? '#0f0d0a' : 'rgba(15,13,10,0.3)' }}>
                                             {roomState.settings.randomJumpEnabled ? 'ON' : 'OFF'}
                                         </span>
                                     )}
                                 </div>
-                                <p className="text-xs text-slate-400">If enabled, everyone gets periodically teleported to a random page mid-race.</p>
+                                <p className="text-[10px] leading-relaxed" style={{ color: 'rgba(15,13,10,0.45)', fontFamily: 'system-ui, sans-serif' }}>
+                                    Randomly teleports all players mid-race.
+                                </p>
                             </div>
 
-                            {/* Timer Slider */}
+                            {/* Timer — max 300s */}
                             {(isHost ? randomJumpEnabled : roomState.settings.randomJumpEnabled) && (
                                 <div>
-                                    <div className="flex justify-between mb-2">
-                                        <label className="text-sm font-medium text-slate-300">Jump Frequency</label>
-                                        <span className="text-sm font-bold text-purple-400">
+                                    <div className="flex justify-between mb-3">
+                                        <label className="text-[8px]" style={{ color: 'rgba(15,13,10,0.7)' }}>JUMP FREQ</label>
+                                        <span className="text-[9px] font-bold">
                                             {isHost ? jumpTimerSeconds : roomState.settings.jumpTimerSeconds}s
                                         </span>
                                     </div>
                                     {isHost ? (
-                                        <input
-                                            type="range"
-                                            min="30" max="180" step="10"
+                                        <input type="range" min="30" max="300" step="10"
                                             value={jumpTimerSeconds}
                                             onChange={(e) => setJumpTimerSeconds(e.target.value)}
-                                            onMouseUp={handleUpdateSettings}
-                                            onTouchEnd={handleUpdateSettings}
-                                            className="w-full accent-purple-600"
-                                        />
+                                            onMouseUp={handleUpdateSettings} onTouchEnd={handleUpdateSettings}
+                                            className="w-full" style={{ accentColor: '#0f0d0a' }} />
                                     ) : (
-                                        <div className="h-2 w-full bg-slate-700 rounded-full overflow-hidden">
-                                            <div className="h-full bg-purple-600 transition-all duration-300" style={{ width: `${(roomState.settings.jumpTimerSeconds / 180) * 100}%` }}></div>
+                                        <div className="h-1.5 w-full border border-[#0f0d0a]/15" style={{ backgroundColor: '#d4c898' }}>
+                                            <div className="h-full transition-all duration-300" style={{ width: `${(roomState.settings.jumpTimerSeconds / 300) * 100}%`, backgroundColor: '#0f0d0a' }}></div>
                                         </div>
                                     )}
                                 </div>
                             )}
 
-                            {/* Target Page Selection */}
-                            <div className="pt-4 border-t border-slate-700">
-                                <label className="block text-sm font-medium text-slate-300 mb-2">Race Destination (Target Page)</label>
+                            {/* Target Page */}
+                            <div style={{ paddingTop: '1rem', borderTop: '1px solid rgba(15,13,10,0.1)' }}>
+                                <label className="block text-[8px] mb-3" style={{ color: 'rgba(15,13,10,0.6)' }}>TARGET PAGE</label>
                                 {isHost ? (
                                     <>
-                                        <input
-                                            type="text"
-                                            value={customTarget}
+                                        <input type="text" value={customTarget}
                                             onChange={(e) => setCustomTarget(e.target.value)}
                                             onBlur={handleUpdateSettings}
                                             onKeyDown={(e) => e.key === 'Enter' && handleUpdateSettings()}
-                                            placeholder="e.g. Banana (Leave empty for random)"
-                                            className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-purple-500 mb-2 text-white"
+                                            placeholder="e.g. Banana"
+                                            style={{ ...inputStyle, marginBottom: '0.5rem' }}
+                                            onFocus={e => e.target.style.borderColor = '#0f0d0a'}
+                                            onBlur2={e => e.target.style.borderColor = 'rgba(15,13,10,0.25)'}
                                         />
-                                        <p className="text-xs text-slate-400 flex items-start gap-2">
-                                            <Info size={14} className="flex-shrink-0 mt-0.5" />
-                                            If left blank, a random target page will be assigned when the game starts.
+                                        <p className="text-[10px] flex items-start gap-1.5 leading-relaxed" style={{ color: 'rgba(15,13,10,0.4)', fontFamily: 'system-ui, sans-serif' }}>
+                                            <Info size={10} className="mt-0.5 flex-shrink-0" /> Leave blank for a random target.
                                         </p>
                                     </>
                                 ) : (
-                                    <div className="bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-300">
-                                        {roomState.targetPage ? roomState.targetPage.replace(/_/g, ' ') : 'Randomly Assigned on Start'}
+                                    <div className="border border-[#0f0d0a]/15 px-3 py-2 text-[8px]" style={{ backgroundColor: '#f0e6c8' }}>
+                                        {roomState.targetPage ? roomState.targetPage.replace(/_/g, ' ') : 'RANDOM ON START'}
                                     </div>
                                 )}
                             </div>
