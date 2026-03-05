@@ -138,13 +138,15 @@ const Lobby = ({ socket, initialRoomState = null, onGameStart, onLeave }) => {
                 const data = await res.json();
                 if (data.error || !data.title) {
                     setTargetValid(false);
-                    setTargetError(`"${val.trim()}" not found on Wikipedia.`);
+                    setTargetError(`"${val.trim()}" not found on Wikipedia. Please change it.`);
                 } else {
                     setTargetValid(true);
                     setTargetError('');
+                    // Strip any HTML tags that Wikipedia might return in displaytitle
+                    const cleanTitle = data.title.replace(/<[^>]*>?/gm, '');
                     // Auto-update canonical title from Wikipedia
-                    setCustomTarget(data.title);
-                    setTimeout(() => handleUpdateSettingsWithTarget(data.title), 50);
+                    setCustomTarget(cleanTitle);
+                    setTimeout(() => handleUpdateSettingsWithTarget(cleanTitle), 50);
                 }
             } catch {
                 setTargetValid(false);
@@ -388,10 +390,10 @@ const Lobby = ({ socket, initialRoomState = null, onGameStart, onLeave }) => {
                                         </div>
                                         {/* Validation feedback */}
                                         {targetError && (
-                                            <p className="text-[10px] mb-1" style={{ color: '#b03030', fontFamily: 'system-ui, sans-serif' }}>⚠ {targetError}</p>
+                                            <p className="text-[10px] mb-1 leading-tight" style={{ color: '#b03030', fontFamily: 'system-ui, sans-serif' }}>⚠ {targetError}</p>
                                         )}
                                         {targetValid === true && (
-                                            <p className="text-[10px] mb-1" style={{ color: '#2a6a2a', fontFamily: 'system-ui, sans-serif' }}>✓ Page found on Wikipedia</p>
+                                            <p className="text-[10px] mb-1" style={{ color: '#2a6a2a', fontFamily: 'system-ui, sans-serif' }}>✓ Page found. You can start the game.</p>
                                         )}
                                         <p className="text-[10px] flex items-start gap-1.5 leading-relaxed mt-1" style={{ color: 'rgba(15,13,10,0.4)', fontFamily: 'system-ui, sans-serif' }}>
                                             <Info size={10} className="mt-0.5 flex-shrink-0" /> Leave blank for a random target.
