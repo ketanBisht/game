@@ -4,6 +4,7 @@ import Lobby from './Lobby';
 import Game from './Game';
 import { LogOut, Flag, RefreshCw } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Analytics } from '@vercel/analytics/react';
 import './App.css';
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'https://unfairwiki.onrender.com';
@@ -209,6 +210,7 @@ function App() {
           </div>
         </motion.div>
       )}
+      <Analytics />
     </AnimatePresence>
   );
 }
