@@ -1,8 +1,33 @@
-# React + Vite
+# 🖥️ Unfair Wiki - Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This is the client-side application for **Unfair Wiki**, built with React, Vite, and Tailwind CSS. It provides a highly interactive and responsive interface for players to race through Wikipedia.
 
-Currently, two official plugins are available:
+## 🛠️ Tech Stack
+- **React 18**: Component-based UI architecture.
+- **Vite**: Next-generation frontend tooling for rapid development.
+- **Tailwind CSS 4.0**: Utility-first CSS framework for modern styling.
+- **Socket.io Client**: Real-time event handling for game state updates.
+- **Framer Motion**: Declarative animations for UI transitions and alerts.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 🚀 Development Workflow
+
+1. **Install Dependencies**
+   ```bash
+   npm install
+   ```
+2. **Start Development Server**
+   ```bash
+   npm run dev
+   ```
+3. **Build for Production**
+   ```bash
+   npm run build
+   ```
+
+## 📂 Core Components
+- **`Lobby.jsx`**: Manages the pre-game state. Handles player registration, room joining logic, and the host's settings panel (target page and chaos frequency).
+- **`Game.jsx`**: The main gameplay loop. It intercepts clicks on Wikipedia links, communicates navigation events to the backend, and renders the real-time leaderboard.
+- **`App.jsx`**: Orchestrates the connection to the Socket.io server and manages the high-level application state.
+
+---
+*For full project details and setup instructions, please refer to the [Main Project README](../README.md).*
